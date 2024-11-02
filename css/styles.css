@@ -1,0 +1,95 @@
+header{
+  background-color: #4c2676;
+    color: white;
+}
+
+select{
+  display: block;
+
+}
+
+body{
+  background-color: lightgray;
+}
+
+h1{
+  text-align: center;
+}
+
+label{
+  font-size: larger;
+}
+
+.navbar{
+  color: white;
+}
+
+.row{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.column-half{
+  width: 50%;
+}
+
+.picture{
+  width: auto;
+}
+
+#deck-picture{
+  width: 300px;
+}
+
+.button-container {
+  width: 100%;
+  text-align: end;
+  padding-right: 15px;
+}
+
+.column-half-options{
+  width: 50%;
+  align-content: center;
+  text-align: center;
+}
+
+.submit-button{
+  background-color: orange;
+  color: white;
+  border-radius: 30px;
+}
+
+.exodia-background{
+  object-fit: cover;
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+}
+
+.card-strategies{
+  border-radius: 10px;
+  background-color: lightgray;
+  color: red;
+  padding: 15px;
+}
+
+.add-card{
+  border-radius: 10px;
+    background-color: green;
+    color: white;
+    padding: 15px;
+}
+
+.card-list{
+  display: flex;
+  flex-wrap: wrap;
+  list-style-type: none;
+}
+
+.card-list li {
+  display: inline-block;
+ width: calc(100% / 8);
+  text-align: center;
+  border: 1px;
+  height: calc(100%/8);
+}
