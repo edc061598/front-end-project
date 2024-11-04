@@ -1,43 +1,42 @@
-header{
+header {
   background-color: #4c2676;
-    color: white;
-}
-
-select{
-  display: block;
-
-}
-
-body{
-  background-color: lightgray;
-}
-
-h1{
-  text-align: center;
-}
-
-label{
-  font-size: larger;
-}
-
-.navbar{
   color: white;
 }
 
-.row{
+select {
+  display: block;
+}
+
+body {
+  background-color: lightgray;
+}
+
+h1 {
+  text-align: center;
+}
+
+label {
+  font-size: larger;
+}
+
+.navbar {
+  color: white;
+}
+
+.row {
   display: flex;
   flex-wrap: wrap;
 }
 
-.column-half{
+.column-half {
   width: 50%;
 }
 
-.picture{
+.picture {
   width: auto;
 }
 
-#deck-picture{
+#deck-picture {
   width: 300px;
 }
 
@@ -47,40 +46,40 @@ label{
   padding-right: 15px;
 }
 
-.column-half-options{
+.column-half-options {
   width: 50%;
   align-content: center;
   text-align: center;
 }
 
-.submit-button{
+.submit-button {
   background-color: orange;
   color: white;
   border-radius: 30px;
 }
 
-.exodia-background{
+.exodia-background {
   object-fit: cover;
   position: absolute;
   width: 100vw;
   height: 100vh;
 }
 
-.card-strategies{
+.card-strategies {
   border-radius: 10px;
   background-color: lightgray;
   color: red;
   padding: 15px;
 }
 
-.add-card{
+.add-card {
   border-radius: 10px;
-    background-color: green;
-    color: white;
-    padding: 15px;
+  background-color: green;
+  color: white;
+  padding: 15px;
 }
 
-.card-list{
+.card-list {
   display: flex;
   flex-wrap: wrap;
   list-style-type: none;
@@ -88,8 +87,13 @@ label{
 
 .card-list li {
   display: inline-block;
- width: calc(100% / 8);
+  width: calc(100% / 8);
   text-align: center;
   border: 1px;
-  height: calc(100%/8);
+  height: calc(100% / 8);
+}
+
+.card-list img {
+  width: 100%;
+  height: auto;
 }

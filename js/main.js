@@ -50,7 +50,7 @@ interface CardCategories {
   title: string;
   notes: string;
   photo: string;
-}*/
+} */
 function changeCardPicture() {
     const value = $typeOfDeck;
     let imgURL = "";
@@ -71,20 +71,20 @@ function changeCardPicture() {
 $typeOfDeck.addEventListener('input', changeCardPicture);
 function renderEntry(entry) {
     const $entry = document.createElement('li');
-    console.log(entry);
     $entry.setAttribute('data-entry-id', entry.toString());
     const $image = document.createElement('img');
     $image.setAttribute('src', entry.card_images[0].image_url);
     $entry.append($image);
+    $cardList?.append($entry);
     return $entry;
 }
 function renderList(entries) {
     for (let i = 0; i < entries.length; i++) {
-        let dataObject = entries[i];
+        const dataObject = entries[i];
         console.log('Data array: ', entries[i].card_images[0].image_url);
         $cardList?.append(renderEntry(dataObject));
-        //console.log(renderEntry(dataObject));
-        //console.log(i);
+        // console.log(renderEntry(dataObject));
+        // console.log(i);
     }
 }
 /*
@@ -122,7 +122,7 @@ async function archetypeFunction(archetype) {
         }
         const { data: dataArray } = (await archetypeData.json());
         console.log(dataArray);
-        /* let dataObject = {};*/
+        /* let dataObject = {}; */
         // renderList(dataArray);
         renderList(dataArray);
     }
@@ -161,10 +161,10 @@ async function spellFunction(race, type) {
 function submitFunction(event) {
     event.preventDefault();
     const $deckElements = $form?.elements;
-    /*console.dir($deckElements);
+    /* console.dir($deckElements);
     console.log($deckElements.deckType)
-    console.dir($deckElements[1])*/
-    /*updateEntries(cardObject);*/
+    console.dir($deckElements[1]) */
+    /* updateEntries(cardObject); */
     const category = $deckElements.cardCategories.value;
     const deckType = $deckElements.deckType.value;
     if (deckType === 'Dark Magician' && category === 'Archetype') {
@@ -205,7 +205,7 @@ function submitFunction(event) {
     }
     writeData();
     resetForm();
-    /* viewSwap('card-entries');*/
+    /* viewSwap('card-entries'); */
 }
 $form.addEventListener('submit', submitFunction);
 function resetForm() {
@@ -222,4 +222,4 @@ function viewSwap(viewName: 'card-entries' | 'entry-form'): void{
     $allCardEntries?.classList.add('hidden');
   }
   data.view = viewName;
-}*/
+} */

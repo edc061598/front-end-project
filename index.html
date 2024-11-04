@@ -1,54 +1,55 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AJAX Project</title>
-  <link rel="icon" href="images/favicon.ico">
-  <link rel="stylesheet" href="css/reset.css">
-  <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-  <header>
-    <div class="container">
-
-      <div class="row">
-        <div class="column-full">
-          <span class="card-deck">MAKE YOUR YUGIOH DECK!!!</span>
-          <a href="#" data-view="view-deck" class="navbar">View Deck</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AJAX Project</title>
+    <link rel="icon" href="images/favicon.ico" />
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="row">
+          <div class="column-full">
+            <span class="card-deck">MAKE YOUR YUGIOH DECK!!!</span>
+            <a href="#" data-view="view-deck" class="navbar">View Deck</a>
+          </div>
         </div>
       </div>
+    </header>
+    <main class="container">
+      <div data-view="entry-form" class="entries-form">
+        <form id="contact-form">
+          <div class="row">
+            <div class="column-full">
+              <h1 id="new-entry">NEW DECK</h1>
+            </div>
 
-    </div>
-  </header>
-  <main class="container">
-    <div data-view="entry-form" class="entries-form">
-      <form id="contact-form">
-    <div class="row">
+            <div class="column-half">
+              <img
+                id="deck-picture"
+                class="deck-picture"
+                src="images/placeholder-image-square.jpg"
+                alt="photo-placeholder" />
+            </div>
 
-      <div class="column-full">
-        <h1 id="new-entry">NEW DECK</h1>
-      </div>
+            <div class="column-half">
+              <label for="deck-type">DECK TYPE</label>
+              <select
+                required
+                id="deck-type-menu"
+                name="deckType"
+                class="dropdown">
+                <option value="">Please select a deck</option>
+                <option value="Blue Eyes">Blue Eyes</option>
+                <option value="Dark Magician">Dark Magician</option>
+                <option value="Red Eyes">All Cards</option>
+              </select>
 
-      <div class="column-half">
-          <img
-          id="deck-picture"
-          class="deck-picture"
-          src="images/placeholder-image-square.jpg"
-          alt="photo-placeholder" />
-      </div>
-
-        <div class="column-half">
-          <label for="deck-type">DECK TYPE</label>
-            <select required id="deck-type-menu" name="deckType" class="dropdown">
-              <option value="">Please select a deck</option>
-              <option value="Blue Eyes">Blue Eyes</option>
-              <option value="Dark Magician">Dark Magician</option>
-              <option value="Red Eyes">All Cards</option>
-            </select>
-
-            <label>CATEGORIES</label>
+              <label>CATEGORIES</label>
               <select required id="categories" name="cardCategories">
                 <option value="">Please select a deck</option>
                 <option value="Archetype">Archetype</option>
@@ -56,36 +57,28 @@
                 <option value="Spell">Spell</option>
                 <option value="Trap">Trap</option>
               </select>
+            </div>
+          </div>
+
+          <div class="column-full button-container">
+            <button class="submit-button" type="submit">Submit</button>
+          </div>
+        </form>
+
+        <div data-view="card-entries" class="all-card-entries hidden">
+          <div class="row">
+            <div class="column-half">
+              <a href="#" class="card-strategies">UPDATE CARD STRATEGIES!!! </a>
+            </div>
+            <div class="column-half">
+              <a href="#" class="add-card">ADD CARD</a>
+            </div>
+          </div>
+          <ul class="card-list"></ul>
         </div>
-
-    </div>
-
-    <div class="column-full button-container">
-      <button class="submit-button " type="submit">Submit</button>
-    </div>
-
-    </form>
-
-    <div data-view="card-entries" class="all-card-entries hidden">
-
-      <div class="row">
-
-        <div class="column-half">
-          <a href=# class="card-strategies">UPDATE CARD STRATEGIES!!!
-          </a>
-        </div>
-        <div class="column-half">
-          <a href="#" class="add-card">ADD CARD</a>
-        </div>
-
       </div>
-      <ul class="card-list">
-      </ul>
-
-    </div>
-  </div>
-  </main>
-  <script src="js/data.js"></script>
-  <script src="js/main.js"></script>
-</body>
+    </main>
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+  </body>
 </html>
