@@ -6,7 +6,7 @@ interface CardData{
   name: any[];
   archetype: any[];
   nextEntryId:number;
-  editing: null | CardCategories;
+
 }
 
 const localStorageDataKey = 'Entry-form';
@@ -26,7 +26,7 @@ function readData(): CardData {
       name: [],
       archetype: [],
       nextEntryId: 1,
-      editing: null,
+
     };
   }
   return data;

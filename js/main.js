@@ -23,9 +23,34 @@ if (!$allCardEntries)
 const $h2Element = document.getElementById('new-entry');
 if (!$h2Element)
     throw new Error('$h2Element does not exist');
-const $blueEyes = $typeOfDeck.querySelector('option[value = blue-eyes]');
-const $darkMagician = $typeOfDeck.querySelector('option[value = dark-magician]');
-const $blueMagician = $typeOfDeck.querySelector('option[all]');
+/*
+interface APIData{
+archetype: string;
+atk: number;
+attribute: string;
+card_images: string;
+image_url: string;
+def:number;
+desc: string;
+humanReadableCardType: string;
+id: number;
+level:number;
+name:string;
+race: string;
+type: string;
+}
+*/
+/*
+interface CardCategories {
+  archetype: string;
+  name: any;
+  spell: string;
+  trap: string;
+  entryId: number;
+  title: string;
+  notes: string;
+  photo: string;
+}*/
 function changeCardPicture() {
     const value = $typeOfDeck;
     let imgURL = "";
@@ -35,8 +60,8 @@ function changeCardPicture() {
     else if (value.value === 'Dark Magician') {
         imgURL = 'images/dattnu1-7bfd7578-4cb9-4972-bafb-63ac78e518a9.png';
     }
-    else if (value.value === 'all') {
-        imgURL = 'images/blue eyes vs dark magician.jpg';
+    else if (value.value === 'Red Eyes') {
+        imgURL = 'images/apim3vcts__12756.jpg';
     }
     else {
         imgURL = 'images/placeholder-image-square.jpg';
@@ -62,33 +87,32 @@ function renderList(entries) {
         //console.log(i);
     }
 }
-function domContentLoaded() {
-    if (!$cardList) {
-        throw new Error('$cardList is null');
-    }
-    for (let i = 0; i < data.archetype.length; i++) {
-        const entry = data.archetype[i];
-        $cardList.append(renderEntry(entry));
-    }
-    const currentView = data.view;
-    viewSwap(currentView);
+/*
+function domContentLoaded(): void{
+  if(!$cardList){
+    throw new Error('$cardList is null');
+  }
+  for (let i:number = 0; i < data.archetype.length; i++){
+    const entry = data.archetype[i];
+    $cardList.append(renderEntry(entry));
+  }
+  const currentView = data.view;
+  viewSwap(currentView);
 }
+*/
 async function nameFunction(name) {
     try {
         const nameData = await fetch(`https://db.ygoprodeck.com/api/v7/cardinfo.php?name=${name}`);
         if (!nameData.ok) {
             throw new Error(`HTTP ERROR: ${nameData.status}`);
         }
-        const nameUser = (await nameData.json());
-        data.name.push(nameUser.data[0]);
-        console.log(data.name.push(nameUser.data[0]));
-        nameImageFunction(nameUser.data[0]);
+        const { data: dataArray } = (await nameData.json());
+        console.log(dataArray);
+        renderList(dataArray);
     }
     catch (error) {
         console.log('ERROR: ', error);
     }
-}
-function nameLoopFunction(name) {
 }
 async function archetypeFunction(archetype) {
     try {
@@ -98,7 +122,7 @@ async function archetypeFunction(archetype) {
         }
         const { data: dataArray } = (await archetypeData.json());
         console.log(dataArray);
-        let dataObject = {};
+        /* let dataObject = {};*/
         // renderList(dataArray);
         renderList(dataArray);
     }
@@ -112,9 +136,9 @@ async function trapFunction(race, type) {
         if (!trapData.ok) {
             throw new Error(`HTTP ERROR: ${trapData.status}`);
         }
-        const trapUser = (await trapData.json());
-        data.trap.push(trapUser.data[0]);
-        nameImageFunction(trapUser.data[0]);
+        const { data: dataArray } = (await trapData.json());
+        console.log(dataArray);
+        renderList(dataArray);
     }
     catch (error) {
         console.log('ERROR: ', error);
@@ -126,9 +150,9 @@ async function spellFunction(race, type) {
         if (!spellData.ok) {
             throw new Error(`HTTP ERROR: ${spellData.status}`);
         }
-        const spellUser = (await spellData.json());
-        data.spell.push(spellUser.data[0]);
-        nameImageFunction(spellUser.data[0]);
+        const { data: dataArray } = (await spellData.json());
+        console.log(dataArray);
+        renderList(dataArray);
     }
     catch (error) {
         console.log('ERROR: ', error);
@@ -142,30 +166,42 @@ function submitFunction(event) {
     console.dir($deckElements[1])*/
     /*updateEntries(cardObject);*/
     const category = $deckElements.cardCategories.value;
-    const deck_Type = $deckElements.deckType.value;
-    if (deck_Type === 'Dark Magician' && category === 'Archetype') {
+    const deckType = $deckElements.deckType.value;
+    if (deckType === 'Dark Magician' && category === 'Archetype') {
         archetypeFunction('dark magician');
     }
-    else if (deck_Type === 'Blue Eyes' && category === 'Archetype') {
+    else if (deckType === 'Blue Eyes' && category === 'Archetype') {
         archetypeFunction('blue-eyes');
     }
-    else if (deck_Type === 'Dark Magician' && category === 'Name') {
+    else if (deckType === 'Dark Magician' && category === 'Name') {
         nameFunction('dark magician');
     }
-    else if (deck_Type === 'Blue Eyes' && category === 'Name') {
+    else if (deckType === 'Blue Eyes' && category === 'Name') {
         nameFunction('blue-eyes white dragon');
     }
-    else if (deck_Type === 'Dark Magician' && category === 'Spell') {
+    else if (deckType === 'Dark Magician' && category === 'Spell') {
         spellFunction('dark magician', 'spell card');
     }
-    else if (deck_Type === 'Blue Eyes' && category === 'Spell') {
+    else if (deckType === 'Blue Eyes' && category === 'Spell') {
         spellFunction('blue-eyes', 'spell card');
     }
-    else if (deck_Type === 'Dark Magician' && category === 'Trap') {
+    else if (deckType === 'Dark Magician' && category === 'Trap') {
         trapFunction('dark magician', 'trap card');
     }
-    else if (deck_Type === 'Blue Eyes' && category === 'Trap') {
+    else if (deckType === 'Blue Eyes' && category === 'Trap') {
         trapFunction('blue-eyes', 'trap card');
+    }
+    else if (deckType === 'Red Eyes' && category === 'Archetype') {
+        archetypeFunction('red-eyes');
+    }
+    else if (deckType === 'Red Eyes' && category === 'Name') {
+        nameFunction('red-eyes black dragon');
+    }
+    else if (deckType === 'Red Eyes' && category === 'Spell') {
+        spellFunction('red-eyes', 'spell card');
+    }
+    else if (deckType === 'Red Eyes' && category === 'Trap') {
+        trapFunction('red-eyes', 'trap card');
     }
     writeData();
     resetForm();
@@ -176,33 +212,14 @@ function resetForm() {
     $placeholderPicture.src = 'images/placeholder-image-square.jpg';
     $form.reset();
 }
-function viewSwap(viewName) {
-    if (viewName === 'card-entries') {
-        $entriesForm.classList.add('hidden');
-        $allCardEntries?.classList.remove('hidden');
-    }
-    else if (viewName === 'entry-form') {
-        $entriesForm.classList.remove('hidden');
-        $allCardEntries?.classList.add('hidden');
-    }
-    data.view = viewName;
-}
-function ulFunction(event) {
-    const $eventTarget = event.target;
-}
-function nameImageFunction(name) {
-    for (let i = 0; i < data.name.length; i++) {
-        if (data.name[i].name === 'Blue Eyes') {
-            console.log(data.name[i].card_images[i].image_url);
-        }
-        else if (data.name[i].name === 'Dark Magician') {
-            console.log(data.name[i].card_images[i].image_url);
-        }
-    }
-}
-function archetypeImageFunction(archetype) {
-    for (let i = 0; i < data.archetype.length; i++) {
-        /* console.log(data.archetype[i].card_images[i].image_url);*/
-        console.log(data.archetype[i].image_url);
-    }
-}
+/*
+function viewSwap(viewName: 'card-entries' | 'entry-form'): void{
+  if(viewName === 'card-entries'){
+    $entriesForm.classList.add('hidden');
+    $allCardEntries?.classList.remove('hidden');
+  } else if(viewName === 'entry-form'){
+    $entriesForm.classList.remove('hidden');
+    $allCardEntries?.classList.add('hidden');
+  }
+  data.view = viewName;
+}*/

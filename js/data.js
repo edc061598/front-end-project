@@ -15,7 +15,6 @@ function readData() {
             name: [],
             archetype: [],
             nextEntryId: 1,
-            editing: null,
         };
     }
     return data;
@@ -24,4 +23,3 @@ function writeData() {
     const localDataJSON = JSON.stringify(data);
     localStorage.setItem(localStorageDataKey, localDataJSON);
 }
-console.log(data.archetype[3]);
