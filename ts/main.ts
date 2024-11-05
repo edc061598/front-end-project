@@ -90,6 +90,8 @@ function renderEntry(entry: any): HTMLLIElement {
   $entry.setAttribute('data-entry-id', entry.toString());
   const $image = document.createElement('img');
   $image.setAttribute('src', entry.card_images[0].image_url);
+  $image.classList.add('scaled');
+
   $entry.append($image);
   $cardList?.append($entry);
   return $entry;
@@ -118,6 +120,8 @@ function domContentLoaded(): void{
   viewSwap(currentView);
 }
 */
+
+// Example usage: scale the card with entry ID 2
 
 async function nameFunction(name: string): Promise<void> {
   try {
