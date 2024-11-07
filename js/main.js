@@ -1,44 +1,20 @@
-const $entriesForm = document.querySelector('.entries-form') as HTMLFormElement;
+'use strict';
+const $entriesForm = document.querySelector('.entries-form');
 if (!$entriesForm) throw new Error('$entriesForm does not exist');
-
-const $placeholderPicture = document.getElementById(
-  'deck-picture',
-) as HTMLImageElement;
+const $placeholderPicture = document.getElementById('deck-picture');
 if (!$placeholderPicture) throw new Error('$placeholderPicture does not exist');
-
-const $form = document.querySelector('#contact-form') as HTMLFormElement;
+const $form = document.querySelector('#contact-form');
 if (!$form) throw new Error('$submit does not exist');
-
-const $typeOfDeck = document.getElementById(
-  'deck-type-menu',
-) as HTMLInputElement;
+const $typeOfDeck = document.getElementById('deck-type-menu');
 if (!$typeOfDeck) throw new Error('$typeOfDeck does not exist');
-
-const $selectButton = document.getElementById('categories') as HTMLInputElement;
+const $selectButton = document.getElementById('categories');
 if (!$selectButton) throw new Error('$selectButton does not exist');
-
 const $cardList = document.querySelector('.card-list');
 if (!$cardList) throw new Error('$cardList does not exist');
-
 const $allCardEntries = document.querySelector('.all-card-entries');
 if (!$allCardEntries) throw new Error('$allCardEntries does not exist');
-
 const $h2Element = document.getElementById('new-entry');
 if (!$h2Element) throw new Error('$h2Element does not exist');
-
-interface CardEntry extends HTMLFormControlsCollection {
-  deckType: HTMLInputElement;
-  cardCategories: HTMLInputElement;
-  archetype: HTMLInputElement;
-  name: HTMLInputElement;
-  spell: HTMLInputElement;
-  trap: HTMLInputElement;
-  entryId: number;
-  title: string;
-  image_url: string;
-  notes: string;
-}
-
 /*
 interface APIData{
 archetype: string;
@@ -67,10 +43,9 @@ interface CardCategories {
   notes: string;
   photo: string;
 } */
-
-function changeCardPicture(): void {
+function changeCardPicture() {
   const value = $typeOfDeck;
-  let imgURL: string = '';
+  let imgURL = '';
   if (value?.value === 'Blue Eyes') {
     imgURL =
       'images/blue_eyes_white_dragon__anime__by_holycrapwhitedragon-db48lo4.jpg';
@@ -84,21 +59,18 @@ function changeCardPicture(): void {
   $placeholderPicture.src = imgURL;
 }
 $typeOfDeck.addEventListener('input', changeCardPicture);
-
-function renderEntry(entry: any): HTMLLIElement {
+function renderEntry(entry) {
   const $entry = document.createElement('li');
   $entry.setAttribute('data-entry-id', entry.toString());
   const $image = document.createElement('img');
   $image.setAttribute('src', entry.card_images[0].image_url);
   $image.classList.add('scaled');
-
   $entry.append($image);
   $cardList?.append($entry);
   return $entry;
 }
-
-function renderList(entries: any): void {
-  for (let i: number = 0; i < entries.length; i++) {
+function renderList(entries) {
+  for (let i = 0; i < entries.length; i++) {
     const dataObject = entries[i];
     console.log('Data array: ', entries[i].card_images[0].image_url);
     $cardList?.append(renderEntry(dataObject));
@@ -106,7 +78,6 @@ function renderList(entries: any): void {
     // console.log(i);
   }
 }
-
 /*
 function domContentLoaded(): void{
   if(!$cardList){
@@ -120,10 +91,8 @@ function domContentLoaded(): void{
   viewSwap(currentView);
 }
 */
-
 // Example usage: scale the card with entry ID 2
-
-async function nameFunction(name: string): Promise<void> {
+async function nameFunction(name) {
   try {
     const nameData = await fetch(
       `https://db.ygoprodeck.com/api/v7/cardinfo.php?name=${name}`,
@@ -138,8 +107,7 @@ async function nameFunction(name: string): Promise<void> {
     console.log('ERROR: ', error);
   }
 }
-
-async function archetypeFunction(archetype: any): Promise<void> {
+async function archetypeFunction(archetype) {
   try {
     const archetypeData = await fetch(
       `https://db.ygoprodeck.com/api/v7/cardinfo.php?archetype=${archetype}`,
@@ -156,8 +124,7 @@ async function archetypeFunction(archetype: any): Promise<void> {
     console.log('ERROR: ', error);
   }
 }
-
-async function trapFunction(race: any, type: any): Promise<void> {
+async function trapFunction(race, type) {
   try {
     const trapData = await fetch(
       `https://db.ygoprodeck.com/api/v7/cardinfo.php?archetype=${race}&type=${type}`,
@@ -172,8 +139,7 @@ async function trapFunction(race: any, type: any): Promise<void> {
     console.log('ERROR: ', error);
   }
 }
-
-async function spellFunction(race: any, type: any): Promise<void> {
+async function spellFunction(race, type) {
   try {
     const spellData = await fetch(
       `https://db.ygoprodeck.com/api/v7/cardinfo.php?archetype=${race}&type=${type}`,
@@ -188,13 +154,12 @@ async function spellFunction(race: any, type: any): Promise<void> {
     console.log('ERROR: ', error);
   }
 }
-
-function submitFunction(event: Event): void {
+function submitFunction(event) {
   event.preventDefault();
-  const $deckElements = $form?.elements as CardEntry;
+  const $deckElements = $form?.elements;
   /* console.dir($deckElements);
-console.log($deckElements.deckType)
-console.dir($deckElements[1]) */
+  console.log($deckElements.deckType)
+  console.dir($deckElements[1]) */
   /* updateEntries(cardObject); */
   const category = $deckElements.cardCategories.value;
   const deckType = $deckElements.deckType.value;
@@ -228,12 +193,10 @@ console.dir($deckElements[1]) */
   /* viewSwap('card-entries'); */
 }
 $form.addEventListener('submit', submitFunction);
-
-function resetForm(): void {
+function resetForm() {
   $placeholderPicture.src = 'images/placeholder-image-square.jpg';
   $form.reset();
 }
-
 /*
 function viewSwap(viewName: 'card-entries' | 'entry-form'): void{
   if(viewName === 'card-entries'){
