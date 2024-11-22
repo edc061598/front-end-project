@@ -1,17 +1,22 @@
 const $entriesForm = document.querySelector('.entries-form') as HTMLFormElement;
 if (!$entriesForm) throw new Error('$entriesForm does not exist');
 
-const $placeholderPicture = document.getElementById(
-  'deck-picture',
-) as HTMLImageElement;
+const $placeholderPicture = document.getElementById('deck-picture',) as HTMLImageElement;
 if (!$placeholderPicture) throw new Error('$placeholderPicture does not exist');
+
+const $newButton = document.querySelector('.new-button');
+if(!$newButton) throw new Error('$newbutton does not exist');
 
 const $form = document.querySelector('#contact-form') as HTMLFormElement;
 if (!$form) throw new Error('$submit does not exist');
 
-const $typeOfDeck = document.getElementById(
-  'deck-type-menu',
-) as HTMLInputElement;
+const $viewDeck = document.querySelector('.view-deck');
+if(!$viewDeck) throw new Error ('$viewDeck does not exist');
+
+const $navBar = document.querySelector('.navbar');
+if (!$navBar) throw new Error('$navbar does not exist');
+
+const $typeOfDeck = document.getElementById('deck-type-menu') as HTMLInputElement;
 if (!$typeOfDeck) throw new Error('$typeOfDeck does not exist');
 
 const $selectButton = document.getElementById('categories') as HTMLInputElement;
@@ -26,6 +31,11 @@ if (!$allCardEntries) throw new Error('$allCardEntries does not exist');
 const $h2Element = document.getElementById('new-entry');
 if (!$h2Element) throw new Error('$h2Element does not exist');
 
+const $selectedCardList = document.querySelector('.selected-card-list') as HTMLUListElement;
+if (!$selectedCardList) throw new Error('Does not exist ')
+
+
+
 interface CardEntry extends HTMLFormControlsCollection {
   deckType: HTMLInputElement;
   cardCategories: HTMLInputElement;
@@ -38,6 +48,9 @@ interface CardEntry extends HTMLFormControlsCollection {
   image_url: string;
   notes: string;
 }
+
+
+
 
 /*
 interface APIData{
@@ -85,43 +98,156 @@ function changeCardPicture(): void {
 }
 $typeOfDeck.addEventListener('input', changeCardPicture);
 
-function renderEntry(entry: any): HTMLLIElement {
-  const $entry = document.createElement('li');
-  $entry.setAttribute('data-entry-id', entry.toString());
-  const $image = document.createElement('img');
-  $image.setAttribute('src', entry.card_images[0].image_url);
-  $image.classList.add('scaled');
 
-  $entry.append($image);
-  $cardList?.append($entry);
-  return $entry;
+let selectedCards: any[] = [];
+function handleCardSelection(event: Event): void {
+  const checkbox = event.target as HTMLInputElement;
+  const $entry = checkbox.closest('li');
+  if(!$entry) {
+    return;
+  }
+  const cardId = $entry.getAttribute('data-entry-id');
+  const $image = $entry.querySelector('img');
+  const cardImageURL = $image ? $image.getAttribute('src'): '';
+
+  const cardData = {
+    id: cardId,
+    image_url: cardImageURL,
+  }
+  if(checkbox.checked){
+    selectedCards.push(cardData);
+  } else {
+    selectedCards = selectedCards.filter(card => card.id !== cardId);
+  }
+  console.log(selectedCards);
 }
 
-function renderList(entries: any): void {
-  for (let i: number = 0; i < entries.length; i++) {
-    const dataObject = entries[i];
-    console.log('Data array: ', entries[i].card_images[0].image_url);
-    $cardList?.append(renderEntry(dataObject));
-    // console.log(renderEntry(dataObject));
-    // console.log(i);
+function addSelectedCards(): void {
+  selectedCards.forEach(card => {
+    const $li = document.createElement('li');
+    const $img = document. createElement('img');
+
+    $img.src = card.image_url;
+    $li.appendChild($img);
+    $selectedCardList.appendChild($li);
+  });
+ viewSwap('my-deck');
+ /* swapView('deck-view');*/
+}
+
+const $addCardButton = document.querySelector('.add-card');
+if($addCardButton) {
+  $addCardButton.addEventListener('click', addSelectedCards);
+}
+
+
+function viewSwap(viewName:string): void {
+  const allViews = document.querySelectorAll('[data-view]') as NodeListOf<HTMLElement>;
+  console.log(allViews);
+  allViews.forEach(view => {
+    view.classList.add('hidden');
+  });
+
+  const viewShow = document.querySelector(`[data-view = "${viewName}"]`) as HTMLElement;
+  if(viewShow) {
+    viewShow.classList.remove('hidden');
   }
+}
+
+
+
+let viewHistory:string[] = [];
+function newButtonFunction(event: Event): void {
+  const $eventTarget = event.target as HTMLElement;
+  console.log($eventTarget);
+  const viewName = $eventTarget.dataset.view;
+  console.log(viewName);
+
+  if(viewName) {
+    const currentView = document.querySelector('.view-deck:not(.hidden)')?.getAttribute('data-view');
+    console.log(currentView);
+    if(currentView){
+      viewHistory.push(currentView);
+      console.log(viewHistory);
+    }
+    viewSwap(viewName);
+  }
+}
+
+if($newButton){
+  $newButton.addEventListener('click', newButtonFunction);
 }
 
 /*
-function domContentLoaded(): void{
-  if(!$cardList){
-    throw new Error('$cardList is null');
-  }
-  for (let i:number = 0; i < data.archetype.length; i++){
-    const entry = data.archetype[i];
-    $cardList.append(renderEntry(entry));
-  }
-  const currentView = data.view;
-  viewSwap(currentView);
-}
-*/
+function swapView(viewId:any) {
+  const views = ['entry-form', 'my-deck'];
+  views.forEach(id => {
+    const view = document.getElementById(id);
+    if (view) {
+      view.classList.add('hidden');
+    }
+  });
 
-// Example usage: scale the card with entry ID 2
+
+  const selectedView = document.getElementById(viewId);
+  if (selectedView) {
+    selectedView.classList.remove('hidden');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  swapView('entry-form');
+
+  const viewDeckLink = document.getElementById('deck-view');
+  if (viewDeckLink) {
+    viewDeckLink.addEventListener('click', function (event) {
+      event.preventDefault();
+      swapView('my-deck');
+    });
+  }
+
+  const newButton = document.getElementById('new-button');
+  if (newButton) {
+    newButton.addEventListener('click', function (event) {
+      console.log(newButton);
+      event.preventDefault();
+      swapView('entry-form');
+    });
+  }
+});*/
+
+
+function renderEntry(entry: any): HTMLLIElement {
+  const $entry = document.createElement('li');
+  $entry.setAttribute('data-entry-id', entry.id.toString());
+  if (entry.card_images && entry.card_images.length > 0) {
+    const $image = document.createElement('img');
+    $image.setAttribute('src', entry.card_images[0].image_url);
+    $image.classList.add('scaled');
+
+    $entry.appendChild($image);
+  } else {
+    console.warn('No images available for this entry:', entry);
+  }
+
+  const $checkbox = document.createElement('input');
+  $checkbox.type = 'checkbox';
+  $checkbox.classList.add('card-checkbox');
+  $checkbox.setAttribute('data-entry-id', entry.id.toString());
+
+  $entry.appendChild($checkbox);
+  $checkbox.addEventListener('change', handleCardSelection);
+  return $entry;
+}
+
+
+function renderList(entries: any): void {
+  entries.forEach((entry:any) => {
+    const $entry = renderEntry(entry);
+    $cardList?.appendChild($entry);
+  });
+}
+
 
 async function nameFunction(name: string): Promise<void> {
   try {
@@ -132,7 +258,7 @@ async function nameFunction(name: string): Promise<void> {
       throw new Error(`HTTP ERROR: ${nameData.status}`);
     }
     const { data: dataArray } = await nameData.json();
-    console.log(dataArray);
+
     renderList(dataArray);
   } catch (error) {
     console.log('ERROR: ', error);
@@ -152,6 +278,7 @@ async function archetypeFunction(archetype: any): Promise<void> {
     /* let dataObject = {}; */
     // renderList(dataArray);
     renderList(dataArray);
+    console.log(renderList(dataArray))
   } catch (error) {
     console.log('ERROR: ', error);
   }
@@ -192,10 +319,7 @@ async function spellFunction(race: any, type: any): Promise<void> {
 function submitFunction(event: Event): void {
   event.preventDefault();
   const $deckElements = $form?.elements as CardEntry;
-  /* console.dir($deckElements);
-console.log($deckElements.deckType)
-console.dir($deckElements[1]) */
-  /* updateEntries(cardObject); */
+
   const category = $deckElements.cardCategories.value;
   const deckType = $deckElements.deckType.value;
   if (deckType === 'Dark Magician' && category === 'Archetype') {
@@ -225,23 +349,11 @@ console.dir($deckElements[1]) */
   }
   writeData();
   resetForm();
-  /* viewSwap('card-entries'); */
+
 }
 $form.addEventListener('submit', submitFunction);
 
-function resetForm(): void {
-  $placeholderPicture.src = 'images/placeholder-image-square.jpg';
-  $form.reset();
-}
-
-/*
-function viewSwap(viewName: 'card-entries' | 'entry-form'): void{
-  if(viewName === 'card-entries'){
-    $entriesForm.classList.add('hidden');
-    $allCardEntries?.classList.remove('hidden');
-  } else if(viewName === 'entry-form'){
-    $entriesForm.classList.remove('hidden');
-    $allCardEntries?.classList.add('hidden');
+  function resetForm(): void {
+    $placeholderPicture.src = 'images/placeholder-image-square.jpg';
+    $form.reset();
   }
-  data.view = viewName;
-} */

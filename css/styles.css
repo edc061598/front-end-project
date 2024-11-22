@@ -97,3 +97,41 @@ label {
   width: 100%;
   height: auto;
 }
+
+
+
+.selected-card-list {
+  display: flex ;
+  flex-wrap: wrap;
+  list-style-type: none;
+}
+
+.selected-card-list li {
+  display: inline-block;
+    width: calc(100% / 8);
+    text-align: center;
+    border: 1px;
+    height: calc(100% / 8);
+}
+
+.selected-card-list img {
+  width: 100%;
+    height: auto;
+}
+
+.new-button {
+  border-radius: 10px;
+  color: white;
+  text-decoration: none;
+  background-color: #4c2676;
+  padding: 15px;
+  align-items: right;
+}
+
+.new-button-wrapper{
+  text-align: end;
+}
+
+.hidden {
+  display: none;
+}

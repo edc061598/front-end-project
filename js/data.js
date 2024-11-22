@@ -15,6 +15,7 @@ function readData() {
             name: [],
             archetype: [],
             nextEntryId: 1,
+            entryId: 0,
         };
     }
     return data;
