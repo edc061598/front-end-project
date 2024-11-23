@@ -143,9 +143,15 @@ if($addCardButton) {
 
 function viewSwap(viewName:string): void {
   const allViews = document.querySelectorAll('[data-view]') as NodeListOf<HTMLElement>;
+  /*
   console.log(allViews);
   allViews.forEach(view => {
     view.classList.add('hidden');
+  });*/
+
+  allViews.forEach(view => {
+    if (view.tagName === "DIV")
+      view.classList.add('hidden');
   });
 
   const viewShow = document.querySelector(`[data-view = "${viewName}"]`) as HTMLElement;
@@ -154,6 +160,17 @@ function viewSwap(viewName:string): void {
   }
 }
 
+
+function handleNavBarClick(event: Event): void {
+  const $clickedLink = event.target as HTMLElement;
+  const viewName = $clickedLink.dataset.view;
+  if (viewName) {
+    viewSwap('my-deck');
+  }
+}
+if ($navBar) {
+  $navBar.addEventListener('click', handleNavBarClick);
+}
 
 
 let viewHistory:string[] = [];

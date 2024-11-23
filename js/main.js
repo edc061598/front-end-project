@@ -121,14 +121,29 @@ if ($addCardButton) {
 }
 function viewSwap(viewName) {
     const allViews = document.querySelectorAll('[data-view]');
+    /*
     console.log(allViews);
     allViews.forEach(view => {
-        view.classList.add('hidden');
+      view.classList.add('hidden');
+    });*/
+    allViews.forEach(view => {
+        if (view.tagName === "DIV")
+            view.classList.add('hidden');
     });
     const viewShow = document.querySelector(`[data-view = "${viewName}"]`);
     if (viewShow) {
         viewShow.classList.remove('hidden');
     }
+}
+function handleNavBarClick(event) {
+    const $clickedLink = event.target;
+    const viewName = $clickedLink.dataset.view;
+    if (viewName) {
+        viewSwap('my-deck');
+    }
+}
+if ($navBar) {
+    $navBar.addEventListener('click', handleNavBarClick);
 }
 let viewHistory = [];
 function newButtonFunction(event) {
