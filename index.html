@@ -21,7 +21,7 @@
       </div>
     </header>
     <main class="container">
-      <div data-view="entry-form" class="entries-form">
+      <div data-view="entry-form" class="entries-form" id="card-database">
         <form id="contact-form">
           <div class="row">
             <div class="column-full">
@@ -46,7 +46,7 @@
                 <option value="">Please select a deck</option>
                 <option value="Blue Eyes">Blue Eyes</option>
                 <option value="Dark Magician">Dark Magician</option>
-                <option value="Red Eyes">All Cards</option>
+                <option value="Red Eyes">Red Eyes</option>
               </select>
 
               <label>CATEGORIES</label>
@@ -65,17 +65,31 @@
           </div>
         </form>
 
-        <div data-view="card-entries" class="all-card-entries hidden">
+        <div  class="all-card-entries ">
           <div class="row">
-            <div class="column-half">
-              <a href="#" class="card-strategies">UPDATE CARD STRATEGIES!!! </a>
-            </div>
+
             <div class="column-half">
               <a href="#" class="add-card">ADD CARD</a>
             </div>
           </div>
           <ul class="card-list"></ul>
         </div>
+      </div>
+
+      <div class="view-deck hidden" data-view = 'my-deck' id="deck-view">
+        <h1>Your Deck</h1>
+        <div class="column-half">
+          <a href="#" class="card-strategies">UPDATE CARD STRATEGIES!!! </a>
+        </div>
+        <div class="column-half">
+          <div class="new-button-wrapper">
+            <a href="#" class="new-button" data-view="entry-form">New</a>
+          </div>
+        </div>
+
+        <ul class="selected-card-list">
+
+        </ul>
       </div>
     </main>
     <script src="js/data.js"></script>

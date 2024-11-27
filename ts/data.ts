@@ -6,6 +6,7 @@ interface CardData{
   name: any[];
   archetype: any[];
   nextEntryId:number;
+  entryId: number;
 
 }
 
@@ -26,6 +27,7 @@ function readData(): CardData {
       name: [],
       archetype: [],
       nextEntryId: 1,
+      entryId: 0,
 
     };
   }
