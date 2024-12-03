@@ -16,6 +16,7 @@ function readData() {
             archetype: [],
             nextEntryId: 1,
             entryId: 0,
+            selectedCards: [],
         };
     }
     return data;

@@ -35,34 +35,9 @@ if (!$h2Element)
 const $selectedCardList = document.querySelector('.selected-card-list');
 if (!$selectedCardList)
     throw new Error('Does not exist ');
-/*
-interface APIData{
-archetype: string;
-atk: number;
-attribute: string;
-card_images: string;
-image_url: string;
-def:number;
-desc: string;
-humanReadableCardType: string;
-id: number;
-level:number;
-name:string;
-race: string;
-type: string;
-}
-*/
-/*
-interface CardCategories {
-  archetype: string;
-  name: any;
-  spell: string;
-  trap: string;
-  entryId: number;
-  title: string;
-  notes: string;
-  photo: string;
-} */
+const $updateCardStrategies = document.querySelector('.card-strategies');
+if (!$updateCardStrategies)
+    throw new Error('$updateCardStrategies does not exist');
 function changeCardPicture() {
     const value = $typeOfDeck;
     let imgURL = '';
@@ -82,6 +57,27 @@ function changeCardPicture() {
     $placeholderPicture.src = imgURL;
 }
 $typeOfDeck.addEventListener('input', changeCardPicture);
+function updateCardStrategiesFunction(event) {
+    event.preventDefault();
+    const $eventTarget = event.target;
+    console.log($eventTarget);
+    const $updateCardStrategies = $eventTarget.getAttribute('data-entry-id');
+    if ($h2Element != null) {
+        $h2Element.textContent = 'UPDATE YOUR DECK!!!';
+    }
+    viewSwap('entry-form');
+}
+if ($updateCardStrategies) {
+    $updateCardStrategies.addEventListener('click', updateCardStrategiesFunction);
+}
+function resetToNewDeckFunction(event) {
+    if ($h2Element) {
+        $h2Element.textContent = 'NEW DECK';
+    }
+}
+if ($newButton) {
+    $newButton.addEventListener('click', resetToNewDeckFunction);
+}
 let selectedCards = [];
 function handleCardSelection(event) {
     const checkbox = event.target;
@@ -97,23 +93,31 @@ function handleCardSelection(event) {
         image_url: cardImageURL,
     };
     if (checkbox.checked) {
-        selectedCards.push(cardData);
+        data.selectedCards.push(cardData);
     }
     else {
-        selectedCards = selectedCards.filter(card => card.id !== cardId);
+        data.selectedCards = data.selectedCards.filter(card => card.id !== cardId);
     }
-    console.log(selectedCards);
+    writeData();
 }
 function addSelectedCards() {
-    selectedCards.forEach(card => {
+    if ($selectedCardList) {
+        $selectedCardList.innerHTML = '';
+    }
+    data.selectedCards.forEach(card => {
         const $li = document.createElement('li');
         const $img = document.createElement('img');
         $img.src = card.image_url;
         $li.appendChild($img);
+        // if($selectedCardList && $selectedCardList.firstChild){
+        //   $selectedCardList.insertBefore($li, $selectedCardList.firstChild);
+        // } else if($selectedCardList){
+        // $selectedCardList.appendChild($li);
+        // }
         $selectedCardList.appendChild($li);
     });
+    writeData();
     viewSwap('my-deck');
-    /* swapView('deck-view');*/
 }
 const $addCardButton = document.querySelector('.add-card');
 if ($addCardButton) {
@@ -133,6 +137,9 @@ function viewSwap(viewName) {
     const viewShow = document.querySelector(`[data-view = "${viewName}"]`);
     if (viewShow) {
         viewShow.classList.remove('hidden');
+        if (viewName === 'my-deck') {
+            addSelectedCards(); // Load selected cards when switching to 'my-deck' view
+        }
     }
 }
 function handleNavBarClick(event) {
@@ -156,7 +163,6 @@ function newButtonFunction(event) {
         console.log(currentView);
         if (currentView) {
             viewHistory.push(currentView);
-            console.log(viewHistory);
         }
         viewSwap(viewName);
     }
@@ -164,43 +170,6 @@ function newButtonFunction(event) {
 if ($newButton) {
     $newButton.addEventListener('click', newButtonFunction);
 }
-/*
-function swapView(viewId:any) {
-  const views = ['entry-form', 'my-deck'];
-  views.forEach(id => {
-    const view = document.getElementById(id);
-    if (view) {
-      view.classList.add('hidden');
-    }
-  });
-
-
-  const selectedView = document.getElementById(viewId);
-  if (selectedView) {
-    selectedView.classList.remove('hidden');
-  }
-}
-
-document.addEventListener('DOMContentLoaded', function () {
-  swapView('entry-form');
-
-  const viewDeckLink = document.getElementById('deck-view');
-  if (viewDeckLink) {
-    viewDeckLink.addEventListener('click', function (event) {
-      event.preventDefault();
-      swapView('my-deck');
-    });
-  }
-
-  const newButton = document.getElementById('new-button');
-  if (newButton) {
-    newButton.addEventListener('click', function (event) {
-      console.log(newButton);
-      event.preventDefault();
-      swapView('entry-form');
-    });
-  }
-});*/
 function renderEntry(entry) {
     const $entry = document.createElement('li');
     $entry.setAttribute('data-entry-id', entry.id.toString());
@@ -326,7 +295,7 @@ function submitFunction(event) {
     else if (deckType === 'Red Eyes' && category === 'Trap') {
         trapFunction('red-eyes', 'trap card');
     }
-    writeData();
+    // writeData();
     resetForm();
 }
 $form.addEventListener('submit', submitFunction);

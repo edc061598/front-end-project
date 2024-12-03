@@ -32,7 +32,10 @@ const $h2Element = document.getElementById('new-entry');
 if (!$h2Element) throw new Error('$h2Element does not exist');
 
 const $selectedCardList = document.querySelector('.selected-card-list') as HTMLUListElement;
-if (!$selectedCardList) throw new Error('Does not exist ')
+if (!$selectedCardList) throw new Error('Does not exist ');
+
+const $updateCardStrategies = document.querySelector('.card-strategies');
+if(!$updateCardStrategies) throw new Error('$updateCardStrategies does not exist');
 
 
 
@@ -49,37 +52,6 @@ interface CardEntry extends HTMLFormControlsCollection {
   notes: string;
 }
 
-
-
-
-/*
-interface APIData{
-archetype: string;
-atk: number;
-attribute: string;
-card_images: string;
-image_url: string;
-def:number;
-desc: string;
-humanReadableCardType: string;
-id: number;
-level:number;
-name:string;
-race: string;
-type: string;
-}
-*/
-/*
-interface CardCategories {
-  archetype: string;
-  name: any;
-  spell: string;
-  trap: string;
-  entryId: number;
-  title: string;
-  notes: string;
-  photo: string;
-} */
 
 function changeCardPicture(): void {
   const value = $typeOfDeck;
@@ -98,6 +70,30 @@ function changeCardPicture(): void {
 }
 $typeOfDeck.addEventListener('input', changeCardPicture);
 
+function updateCardStrategiesFunction(event: Event):void {
+  event.preventDefault();
+  const $eventTarget = event.target as HTMLElement;
+  console.log($eventTarget);
+  const $updateCardStrategies = $eventTarget.getAttribute('data-entry-id');
+
+  if($h2Element != null){
+    $h2Element.textContent = 'UPDATE YOUR DECK!!!';
+  }
+  viewSwap('entry-form');
+}
+
+if($updateCardStrategies) {
+  $updateCardStrategies.addEventListener('click', updateCardStrategiesFunction);
+}
+
+function resetToNewDeckFunction(event: Event) {
+  if($h2Element){
+    $h2Element.textContent = 'NEW DECK';
+  }
+}
+if($newButton){
+  $newButton.addEventListener('click', resetToNewDeckFunction);
+}
 
 let selectedCards: any[] = [];
 function handleCardSelection(event: Event): void {
@@ -115,25 +111,41 @@ function handleCardSelection(event: Event): void {
     image_url: cardImageURL,
   }
   if(checkbox.checked){
-    selectedCards.push(cardData);
+    data.selectedCards.push(cardData);
   } else {
-    selectedCards = selectedCards.filter(card => card.id !== cardId);
+    data.selectedCards = data.selectedCards.filter(card => card.id !== cardId);
   }
-  console.log(selectedCards);
+  writeData();
+
 }
 
 function addSelectedCards(): void {
-  selectedCards.forEach(card => {
+  if($selectedCardList){
+    $selectedCardList.innerHTML = '';
+  }
+  data.selectedCards.forEach(card => {
     const $li = document.createElement('li');
     const $img = document. createElement('img');
 
     $img.src = card.image_url;
     $li.appendChild($img);
-    $selectedCardList.appendChild($li);
+
+    // if($selectedCardList && $selectedCardList.firstChild){
+    //   $selectedCardList.insertBefore($li, $selectedCardList.firstChild);
+    // } else if($selectedCardList){
+    // $selectedCardList.appendChild($li);
+    // }
+
+      $selectedCardList.appendChild($li);
+
+
+
   });
- viewSwap('my-deck');
- /* swapView('deck-view');*/
+  writeData();
+  viewSwap('my-deck');
+
 }
+
 
 const $addCardButton = document.querySelector('.add-card');
 if($addCardButton) {
@@ -157,8 +169,12 @@ function viewSwap(viewName:string): void {
   const viewShow = document.querySelector(`[data-view = "${viewName}"]`) as HTMLElement;
   if(viewShow) {
     viewShow.classList.remove('hidden');
+    if (viewName === 'my-deck') {
+      addSelectedCards();  // Load selected cards when switching to 'my-deck' view
+    }
   }
 }
+
 
 
 function handleNavBarClick(event: Event): void {
@@ -185,7 +201,7 @@ function newButtonFunction(event: Event): void {
     console.log(currentView);
     if(currentView){
       viewHistory.push(currentView);
-      console.log(viewHistory);
+
     }
     viewSwap(viewName);
   }
@@ -194,44 +210,6 @@ function newButtonFunction(event: Event): void {
 if($newButton){
   $newButton.addEventListener('click', newButtonFunction);
 }
-
-/*
-function swapView(viewId:any) {
-  const views = ['entry-form', 'my-deck'];
-  views.forEach(id => {
-    const view = document.getElementById(id);
-    if (view) {
-      view.classList.add('hidden');
-    }
-  });
-
-
-  const selectedView = document.getElementById(viewId);
-  if (selectedView) {
-    selectedView.classList.remove('hidden');
-  }
-}
-
-document.addEventListener('DOMContentLoaded', function () {
-  swapView('entry-form');
-
-  const viewDeckLink = document.getElementById('deck-view');
-  if (viewDeckLink) {
-    viewDeckLink.addEventListener('click', function (event) {
-      event.preventDefault();
-      swapView('my-deck');
-    });
-  }
-
-  const newButton = document.getElementById('new-button');
-  if (newButton) {
-    newButton.addEventListener('click', function (event) {
-      console.log(newButton);
-      event.preventDefault();
-      swapView('entry-form');
-    });
-  }
-});*/
 
 
 function renderEntry(entry: any): HTMLLIElement {
@@ -264,7 +242,6 @@ function renderList(entries: any): void {
     $cardList?.appendChild($entry);
   });
 }
-
 
 async function nameFunction(name: string): Promise<void> {
   try {
@@ -364,7 +341,7 @@ function submitFunction(event: Event): void {
   } else if (deckType === 'Red Eyes' && category === 'Trap') {
     trapFunction('red-eyes', 'trap card');
   }
-  writeData();
+ // writeData();
   resetForm();
 
 }
