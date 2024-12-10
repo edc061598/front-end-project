@@ -37,6 +37,46 @@ if (!$selectedCardList) throw new Error('Does not exist ');
 const $updateCardStrategies = document.querySelector('.card-strategies');
 if(!$updateCardStrategies) throw new Error('$updateCardStrategies does not exist');
 
+const $modal = document.getElementById('delete-modal') as HTMLElement;
+if (!$modal) throw new Error ('$modal does not exist');
+
+const $confirmDeleteButton = document.getElementById('confirm-delete') as HTMLElement;
+if (!$confirmDeleteButton) throw new Error ('$confirmDeleteButton does not exist');
+
+const $cancelDeleteButton = document.getElementById('cancel-delete') as HTMLElement;
+if(!$cancelDeleteButton) throw new Error('$cancelDeleteButton does not exist');
+
+const $deletebutton = document.querySelector('.delete-cards');
+if(!$deletebutton) throw new Error('$deleteButton does not exist');
+
+function showDeleteModalFunction(): void {
+  console.log($modal);
+  if($modal){
+  $modal.classList.remove('hidden');
+  }
+
+}
+
+function confirmDeleteFunction(): void {
+  const selectedCardsList = document.querySelector('.selected-card-list');
+  if(selectedCardsList){
+  selectedCardsList.innerHTML = '';
+  }
+  if($modal){
+    $modal.classList.add('hidden');
+  }
+}
+
+function cancelDeleteFunction(): void {
+  $modal.classList.add('hidden');
+}
+
+$deletebutton.addEventListener('click', showDeleteModalFunction);
+$confirmDeleteButton.addEventListener('click', confirmDeleteFunction);
+$cancelDeleteButton.addEventListener('click', cancelDeleteFunction);
+
+console.log('delete', $deletebutton.addEventListener('click', showDeleteModalFunction))
+
 
 
 interface CardEntry extends HTMLFormControlsCollection {
@@ -123,27 +163,25 @@ function addSelectedCards(): void {
   if($selectedCardList){
     $selectedCardList.innerHTML = '';
   }
-  data.selectedCards.forEach(card => {
-    const $li = document.createElement('li');
-    const $img = document. createElement('img');
-
-    $img.src = card.image_url;
-    $li.appendChild($img);
-
-    // if($selectedCardList && $selectedCardList.firstChild){
-    //   $selectedCardList.insertBefore($li, $selectedCardList.firstChild);
-    // } else if($selectedCardList){
-    // $selectedCardList.appendChild($li);
-    // }
-
-      $selectedCardList.appendChild($li);
-
-
-
-  });
+  loadAddedCardsFunction();
   writeData();
   viewSwap('my-deck');
 
+}
+
+function loadAddedCardsFunction():void {
+  data.selectedCards.forEach(card => {
+    const $li = document.createElement('li');
+    const $img = document.createElement('img');
+
+    $img.src = card.image_url;
+    $li.appendChild($img);
+    $selectedCardList.appendChild($li);
+  });
+}
+
+function deleteFunction(): void {
+  loadAddedCardsFunction();
 }
 
 
@@ -155,11 +193,7 @@ if($addCardButton) {
 
 function viewSwap(viewName:string): void {
   const allViews = document.querySelectorAll('[data-view]') as NodeListOf<HTMLElement>;
-  /*
-  console.log(allViews);
-  allViews.forEach(view => {
-    view.classList.add('hidden');
-  });*/
+
 
   allViews.forEach(view => {
     if (view.tagName === "DIV")
@@ -170,7 +204,7 @@ function viewSwap(viewName:string): void {
   if(viewShow) {
     viewShow.classList.remove('hidden');
     if (viewName === 'my-deck') {
-      addSelectedCards();  // Load selected cards when switching to 'my-deck' view
+   //   addSelectedCards();  // Load selected cards when switching to 'my-deck' view
     }
   }
 }
@@ -179,8 +213,11 @@ function viewSwap(viewName:string): void {
 
 function handleNavBarClick(event: Event): void {
   const $clickedLink = event.target as HTMLElement;
+  console.log('clickedlink', $clickedLink);
   const viewName = $clickedLink.dataset.view;
   if (viewName) {
+    // loadAddedCardsFunction();
+    addSelectedCards();
     viewSwap('my-deck');
   }
 }
@@ -268,9 +305,7 @@ async function archetypeFunction(archetype: any): Promise<void> {
       throw new Error(`HTTP ERROR: ${archetype.status}`);
     }
     const { data: dataArray } = await archetypeData.json();
-    console.log(dataArray);
-    /* let dataObject = {}; */
-    // renderList(dataArray);
+
     renderList(dataArray);
     console.log(renderList(dataArray))
   } catch (error) {

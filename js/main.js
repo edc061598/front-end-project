@@ -38,6 +38,40 @@ if (!$selectedCardList)
 const $updateCardStrategies = document.querySelector('.card-strategies');
 if (!$updateCardStrategies)
     throw new Error('$updateCardStrategies does not exist');
+const $modal = document.getElementById('delete-modal');
+if (!$modal)
+    throw new Error('$modal does not exist');
+const $confirmDeleteButton = document.getElementById('confirm-delete');
+if (!$confirmDeleteButton)
+    throw new Error('$confirmDeleteButton does not exist');
+const $cancelDeleteButton = document.getElementById('cancel-delete');
+if (!$cancelDeleteButton)
+    throw new Error('$cancelDeleteButton does not exist');
+const $deletebutton = document.querySelector('.delete-cards');
+if (!$deletebutton)
+    throw new Error('$deleteButton does not exist');
+function showDeleteModalFunction() {
+    console.log($modal);
+    if ($modal) {
+        $modal.classList.remove('hidden');
+    }
+}
+function confirmDeleteFunction() {
+    const selectedCardsList = document.querySelector('.selected-card-list');
+    if (selectedCardsList) {
+        selectedCardsList.innerHTML = '';
+    }
+    if ($modal) {
+        $modal.classList.add('hidden');
+    }
+}
+function cancelDeleteFunction() {
+    $modal.classList.add('hidden');
+}
+$deletebutton.addEventListener('click', showDeleteModalFunction);
+$confirmDeleteButton.addEventListener('click', confirmDeleteFunction);
+$cancelDeleteButton.addEventListener('click', cancelDeleteFunction);
+console.log('delete', $deletebutton.addEventListener('click', showDeleteModalFunction));
 function changeCardPicture() {
     const value = $typeOfDeck;
     let imgURL = '';
@@ -104,20 +138,21 @@ function addSelectedCards() {
     if ($selectedCardList) {
         $selectedCardList.innerHTML = '';
     }
+    loadAddedCardsFunction();
+    writeData();
+    viewSwap('my-deck');
+}
+function loadAddedCardsFunction() {
     data.selectedCards.forEach(card => {
         const $li = document.createElement('li');
         const $img = document.createElement('img');
         $img.src = card.image_url;
         $li.appendChild($img);
-        // if($selectedCardList && $selectedCardList.firstChild){
-        //   $selectedCardList.insertBefore($li, $selectedCardList.firstChild);
-        // } else if($selectedCardList){
-        // $selectedCardList.appendChild($li);
-        // }
         $selectedCardList.appendChild($li);
     });
-    writeData();
-    viewSwap('my-deck');
+}
+function deleteFunction() {
+    loadAddedCardsFunction();
 }
 const $addCardButton = document.querySelector('.add-card');
 if ($addCardButton) {
@@ -125,11 +160,6 @@ if ($addCardButton) {
 }
 function viewSwap(viewName) {
     const allViews = document.querySelectorAll('[data-view]');
-    /*
-    console.log(allViews);
-    allViews.forEach(view => {
-      view.classList.add('hidden');
-    });*/
     allViews.forEach(view => {
         if (view.tagName === "DIV")
             view.classList.add('hidden');
@@ -138,14 +168,17 @@ function viewSwap(viewName) {
     if (viewShow) {
         viewShow.classList.remove('hidden');
         if (viewName === 'my-deck') {
-            addSelectedCards(); // Load selected cards when switching to 'my-deck' view
+            //   addSelectedCards();  // Load selected cards when switching to 'my-deck' view
         }
     }
 }
 function handleNavBarClick(event) {
     const $clickedLink = event.target;
+    console.log('clickedlink', $clickedLink);
     const viewName = $clickedLink.dataset.view;
     if (viewName) {
+        // loadAddedCardsFunction();
+        addSelectedCards();
         viewSwap('my-deck');
     }
 }
@@ -216,9 +249,6 @@ async function archetypeFunction(archetype) {
             throw new Error(`HTTP ERROR: ${archetype.status}`);
         }
         const { data: dataArray } = await archetypeData.json();
-        console.log(dataArray);
-        /* let dataObject = {}; */
-        // renderList(dataArray);
         renderList(dataArray);
         console.log(renderList(dataArray));
     }
