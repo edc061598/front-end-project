@@ -46,37 +46,68 @@ if (!$confirmDeleteButton) throw new Error ('$confirmDeleteButton does not exist
 const $cancelDeleteButton = document.getElementById('cancel-delete') as HTMLElement;
 if(!$cancelDeleteButton) throw new Error('$cancelDeleteButton does not exist');
 
-const $deletebutton = document.querySelector('.delete-cards');
-if(!$deletebutton) throw new Error('$deleteButton does not exist');
+const $deleteButton = document.querySelector('.delete-cards');
+if(!$deleteButton) throw new Error('$deleteButton does not exist');
 
-function showDeleteModalFunction(): void {
-  console.log($modal);
-  if($modal){
-  $modal.classList.remove('hidden');
-  }
+let selectedCardIdsToDelete: string[] = [];
 
-}
+function showDeleteModal(): void {
+  // Collect the selected card IDs
+  const checkboxes = document.querySelectorAll('.delete-checkbox:checked') as NodeListOf<HTMLInputElement>;
+  selectedCardIdsToDelete = Array.from(checkboxes).map((checkbox) => checkbox.value);
 
-function confirmDeleteFunction(): void {
-  const selectedCardsList = document.querySelector('.selected-card-list');
-  if(selectedCardsList){
-  selectedCardsList.innerHTML = '';
-  }
-  if($modal){
-    $modal.classList.add('hidden');
+  if (selectedCardIdsToDelete.length > 0) {
+    // Show the modal if there are selected cards
+    $modal.classList.remove('hidden');
   }
 }
+
+
+
+function confirmDelete(): void {
+  if (selectedCardIdsToDelete.length > 0) {
+    // Retrieve current data from localStorage
+    const data = JSON.parse(localStorage.getItem('data') || '{"selectedCards": []}');
+
+    // Filter out the deleted cards
+    data.selectedCards = data.selectedCards.filter((card: { id: string }) =>
+      !selectedCardIdsToDelete.includes(card.id)
+    );
+
+    // Save the updated data back to localStorage
+    localStorage.setItem('data', JSON.stringify(data));
+
+    // Update the UI (refresh selected cards list)
+    loadAddedCardsFunction();
+  }
+
+  // Hide the modal
+  $modal.classList.add('hidden');
+}
+
+
 
 function cancelDeleteFunction(): void {
   $modal.classList.add('hidden');
 }
 
-$deletebutton.addEventListener('click', showDeleteModalFunction);
-$confirmDeleteButton.addEventListener('click', confirmDeleteFunction);
+$deleteButton.addEventListener('click', showDeleteModal);
+$confirmDeleteButton.addEventListener('click', confirmDelete);
 $cancelDeleteButton.addEventListener('click', cancelDeleteFunction);
 
-console.log('delete', $deletebutton.addEventListener('click', showDeleteModalFunction))
+function selectCardsToDelete(): void {
+  const checkboxes = document.querySelectorAll('.delete-checkbox:checked') as NodeListOf<HTMLInputElement>;
 
+
+  selectedCardIdsToDelete = Array.from(checkboxes).map((checkbox) => checkbox.value);
+
+
+  if (selectedCardIdsToDelete.length > 0) {
+    $deleteButton?.classList.remove('hidden');
+  } else {
+    $deleteButton?.classList.add('hidden'); // Hide the delete button if no cards are selected
+  }
+}
 
 
 interface CardEntry extends HTMLFormControlsCollection {
@@ -120,6 +151,7 @@ function updateCardStrategiesFunction(event: Event):void {
     $h2Element.textContent = 'UPDATE YOUR DECK!!!';
   }
   viewSwap('entry-form');
+  writeData();
 }
 
 if($updateCardStrategies) {
@@ -138,6 +170,7 @@ if($newButton){
 let selectedCards: any[] = [];
 function handleCardSelection(event: Event): void {
   const checkbox = event.target as HTMLInputElement;
+    const data = JSON.parse(localStorage.getItem('data') || '{"selectedCards": []}');
   const $entry = checkbox.closest('li');
   if(!$entry) {
     return;
@@ -150,13 +183,20 @@ function handleCardSelection(event: Event): void {
     id: cardId,
     image_url: cardImageURL,
   }
-  if(checkbox.checked){
-    data.selectedCards.push(cardData);
-  } else {
-    data.selectedCards = data.selectedCards.filter(card => card.id !== cardId);
-  }
-  writeData();
 
+;
+  if(checkbox.checked){
+    if(!data.selectedCards.some(card => card.id === cardId)){
+      data.selectedCards.push(cardData);
+    }
+
+  } else {
+    // data.selectedCards = data.selectedCards.filter((card) => card.id !== cardId);
+  }
+  localStorage.setItem('data', JSON.stringify(data));
+  loadAddedCardsFunction();
+  selectCardsToDelete();
+  writeData();
 }
 
 function addSelectedCards(): void {
@@ -170,18 +210,30 @@ function addSelectedCards(): void {
 }
 
 function loadAddedCardsFunction():void {
-  data.selectedCards.forEach(card => {
+  const data = JSON.parse(localStorage.getItem('data') || '{"selectedCards": []}');
+  $selectedCardList.innerHTML = '';
+
+  data.selectedCards.forEach((card) => {
     const $li = document.createElement('li');
+    $li.setAttribute('data-entry-id', card.id);
+
     const $img = document.createElement('img');
-
     $img.src = card.image_url;
-    $li.appendChild($img);
-    $selectedCardList.appendChild($li);
-  });
-}
 
-function deleteFunction(): void {
-  loadAddedCardsFunction();
+    const $checkbox = document.createElement('input');
+    $checkbox.type = 'checkbox';
+    $checkbox.value = card.id;
+    $checkbox.classList.add('delete-checkbox');
+    $checkbox.checked = card.selected || false;
+
+    $li.appendChild($img);
+    $li.appendChild($checkbox);
+    $selectedCardList.appendChild($li);
+
+    $checkbox.addEventListener('change', (e) => {
+      handleCardSelection(e, card.id);
+    });
+  });
 }
 
 
@@ -376,7 +428,6 @@ function submitFunction(event: Event): void {
   } else if (deckType === 'Red Eyes' && category === 'Trap') {
     trapFunction('red-eyes', 'trap card');
   }
- // writeData();
   resetForm();
 
 }
