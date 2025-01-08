@@ -52,25 +52,15 @@ if (!$deleteButton)
     throw new Error('$deleteButton does not exist');
 let selectedCardIdsToDelete = [];
 function showDeleteModal() {
-    // Collect the selected card IDs
-    const checkboxes = document.querySelectorAll('.delete-checkbox:checked');
-    selectedCardIdsToDelete = Array.from(checkboxes).map((checkbox) => checkbox.value);
-    if (selectedCardIdsToDelete.length > 0) {
-        // Show the modal if there are selected cards
-        $modal.classList.remove('hidden');
-    }
+    $modal.classList.remove('hidden');
 }
 function confirmDelete() {
-    if (selectedCardIdsToDelete.length > 0) {
-        // Retrieve current data from localStorage
-        const data = JSON.parse(localStorage.getItem('data') || '{"selectedCards": []}');
-        // Filter out the deleted cards
-        data.selectedCards = data.selectedCards.filter((card) => !selectedCardIdsToDelete.includes(card.id));
-        // Save the updated data back to localStorage
-        localStorage.setItem('data', JSON.stringify(data));
-        // Update the UI (refresh selected cards list)
-        loadAddedCardsFunction();
-    }
+    // Retrieve current data from localStorage
+    const data = { selectedCards: [] };
+    // Save the updated data back to localStorage
+    localStorage.setItem('data', JSON.stringify(data));
+    // Update the UI (refresh selected cards list)
+    loadAddedCardsFunction();
     // Hide the modal
     $modal.classList.add('hidden');
 }
@@ -144,15 +134,23 @@ function handleCardSelection(event) {
     const cardImageURL = $image ? $image.getAttribute('src') : '';
     const cardData = {
         id: cardId,
-        image_url: cardImageURL,
+        image_url: cardImageURL || '',
+        selected: checkbox.checked,
     };
+    const existingCard = data.selectedCards.find((card) => card.id === cardData.id);
     if (checkbox.checked) {
-        if (!data.selectedCards.some(card => card.id === cardId)) {
+        // if(!data.selectedCards.some(card => card.id === cardId)){
+        //   data.selectedCards.push(cardData);
+        // }
+        if (!existingCard) {
             data.selectedCards.push(cardData);
         }
     }
     else {
         // data.selectedCards = data.selectedCards.filter((card) => card.id !== cardId);
+        if (existingCard) {
+            data.selectedCards = data.selectedCards.filter((card) => card.id !== cardData.id);
+        }
     }
     localStorage.setItem('data', JSON.stringify(data));
     loadAddedCardsFunction();
@@ -169,23 +167,30 @@ function addSelectedCards() {
 }
 function loadAddedCardsFunction() {
     const data = JSON.parse(localStorage.getItem('data') || '{"selectedCards": []}');
+    const selectedCards = data.selectedCards;
     $selectedCardList.innerHTML = '';
-    data.selectedCards.forEach((card) => {
+    selectedCards.forEach((card) => {
         const $li = document.createElement('li');
         $li.setAttribute('data-entry-id', card.id);
         const $img = document.createElement('img');
         $img.src = card.image_url;
-        const $checkbox = document.createElement('input');
-        $checkbox.type = 'checkbox';
-        $checkbox.value = card.id;
-        $checkbox.classList.add('delete-checkbox');
-        $checkbox.checked = card.selected || false;
-        $li.appendChild($img);
-        $li.appendChild($checkbox);
+        if (document.querySelector('[data-view="my-deck"]:not(.hidden)')) {
+            $li.appendChild($img);
+        }
+        else {
+            const $checkbox = document.createElement('input');
+            $checkbox.type = 'checkbox';
+            $checkbox.value = card.id;
+            $checkbox.classList.add('delete-checkbox');
+            $checkbox.checked = card.selected || false;
+            $li.appendChild($img);
+            $li.appendChild($checkbox);
+            $selectedCardList.appendChild($li);
+            $checkbox.addEventListener('change', (e) => {
+                handleCardSelection(e);
+            });
+        }
         $selectedCardList.appendChild($li);
-        $checkbox.addEventListener('change', (e) => {
-            handleCardSelection(e, card.id);
-        });
     });
 }
 const $addCardButton = document.querySelector('.add-card');
@@ -202,6 +207,7 @@ function viewSwap(viewName) {
     if (viewShow) {
         viewShow.classList.remove('hidden');
         if (viewName === 'my-deck') {
+            loadAddedCardsFunction();
             //   addSelectedCards();  // Load selected cards when switching to 'my-deck' view
         }
     }
