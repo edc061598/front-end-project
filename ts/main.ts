@@ -37,6 +37,64 @@ if (!$selectedCardList) throw new Error('Does not exist ');
 const $updateCardStrategies = document.querySelector('.card-strategies');
 if(!$updateCardStrategies) throw new Error('$updateCardStrategies does not exist');
 
+const $modal = document.getElementById('delete-modal') as HTMLElement;
+if (!$modal) throw new Error ('$modal does not exist');
+
+const $confirmDeleteButton = document.getElementById('confirm-delete') as HTMLElement;
+if (!$confirmDeleteButton) throw new Error ('$confirmDeleteButton does not exist');
+
+const $cancelDeleteButton = document.getElementById('cancel-delete') as HTMLElement;
+if(!$cancelDeleteButton) throw new Error('$cancelDeleteButton does not exist');
+
+const $deleteButton = document.querySelector('.delete-cards');
+if(!$deleteButton) throw new Error('$deleteButton does not exist');
+
+let selectedCardIdsToDelete: string[] = [];
+
+function showDeleteModal(): void {
+    $modal.classList.remove('hidden');
+}
+
+
+
+function confirmDelete(): void {
+
+    // Retrieve current data from localStorage
+    const data = {selectedCards: []};
+
+    // Save the updated data back to localStorage
+    localStorage.setItem('data', JSON.stringify(data));
+
+    // Update the UI (refresh selected cards list)
+    loadAddedCardsFunction();
+
+  // Hide the modal
+  $modal.classList.add('hidden');
+}
+
+
+
+function cancelDeleteFunction(): void {
+  $modal.classList.add('hidden');
+}
+
+$deleteButton.addEventListener('click', showDeleteModal);
+$confirmDeleteButton.addEventListener('click', confirmDelete);
+$cancelDeleteButton.addEventListener('click', cancelDeleteFunction);
+
+function selectCardsToDelete(): void {
+  const checkboxes = document.querySelectorAll('.delete-checkbox:checked') as NodeListOf<HTMLInputElement>;
+
+
+  selectedCardIdsToDelete = Array.from(checkboxes).map((checkbox) => checkbox.value);
+
+
+  if (selectedCardIdsToDelete.length > 0) {
+    $deleteButton?.classList.remove('hidden');
+  } else {
+    $deleteButton?.classList.add('hidden'); // Hide the delete button if no cards are selected
+  }
+}
 
 
 interface CardEntry extends HTMLFormControlsCollection {
@@ -50,6 +108,12 @@ interface CardEntry extends HTMLFormControlsCollection {
   title: string;
   image_url: string;
   notes: string;
+}
+
+interface Card {
+  id: string;
+  image_url: string;
+  selected?: boolean;
 }
 
 
@@ -80,6 +144,7 @@ function updateCardStrategiesFunction(event: Event):void {
     $h2Element.textContent = 'UPDATE YOUR DECK!!!';
   }
   viewSwap('entry-form');
+  writeData();
 }
 
 if($updateCardStrategies) {
@@ -98,6 +163,7 @@ if($newButton){
 let selectedCards: any[] = [];
 function handleCardSelection(event: Event): void {
   const checkbox = event.target as HTMLInputElement;
+    const data = JSON.parse(localStorage.getItem('data') || '{"selectedCards": []}');
   const $entry = checkbox.closest('li');
   if(!$entry) {
     return;
@@ -106,44 +172,75 @@ function handleCardSelection(event: Event): void {
   const $image = $entry.querySelector('img');
   const cardImageURL = $image ? $image.getAttribute('src'): '';
 
-  const cardData = {
-    id: cardId,
-    image_url: cardImageURL,
-  }
-  if(checkbox.checked){
-    data.selectedCards.push(cardData);
-  } else {
-    data.selectedCards = data.selectedCards.filter(card => card.id !== cardId);
-  }
-  writeData();
+  const cardData:Card = {
+    id: cardId as string,
+    image_url: cardImageURL || '',
+    selected: checkbox.checked,
+  };
+  const existingCard = data.selectedCards.find((card:Card) => card.id === cardData.id);
 
+  if(checkbox.checked){
+    // if(!data.selectedCards.some(card => card.id === cardId)){
+    //   data.selectedCards.push(cardData);
+    // }
+    if(!existingCard){
+      data.selectedCards.push(cardData);
+    }
+
+  } else {
+    // data.selectedCards = data.selectedCards.filter((card) => card.id !== cardId);
+    if(existingCard){
+      data.selectedCards = data.selectedCards.filter((card: Card) => card.id !== cardData.id);
+    }
+  }
+  localStorage.setItem('data', JSON.stringify(data));
+  loadAddedCardsFunction();
+  selectCardsToDelete();
+  writeData();
 }
 
 function addSelectedCards(): void {
   if($selectedCardList){
     $selectedCardList.innerHTML = '';
   }
-  data.selectedCards.forEach(card => {
-    const $li = document.createElement('li');
-    const $img = document. createElement('img');
-
-    $img.src = card.image_url;
-    $li.appendChild($img);
-
-    // if($selectedCardList && $selectedCardList.firstChild){
-    //   $selectedCardList.insertBefore($li, $selectedCardList.firstChild);
-    // } else if($selectedCardList){
-    // $selectedCardList.appendChild($li);
-    // }
-
-      $selectedCardList.appendChild($li);
-
-
-
-  });
+  loadAddedCardsFunction();
   writeData();
   viewSwap('my-deck');
 
+}
+
+function loadAddedCardsFunction():void {
+  const data = JSON.parse(localStorage.getItem('data') || '{"selectedCards": []}');
+  const selectedCards: Card[] = data.selectedCards;
+  $selectedCardList.innerHTML = '';
+
+
+  selectedCards.forEach((card) => {
+    const $li = document.createElement('li');
+    $li.setAttribute('data-entry-id', card.id);
+
+    const $img = document.createElement('img');
+    $img.src = card.image_url;
+
+    if(document.querySelector('[data-view="my-deck"]:not(.hidden)')){
+      $li.appendChild($img);
+    }else {
+    const $checkbox = document.createElement('input');
+    $checkbox.type = 'checkbox';
+    $checkbox.value = card.id;
+    $checkbox.classList.add('delete-checkbox');
+    $checkbox.checked = card.selected || false;
+
+    $li.appendChild($img);
+    $li.appendChild($checkbox);
+    $selectedCardList.appendChild($li);
+
+    $checkbox.addEventListener('change', (e) => {
+      handleCardSelection(e);
+    });
+  }
+  $selectedCardList.appendChild($li);
+  });
 }
 
 
@@ -155,11 +252,7 @@ if($addCardButton) {
 
 function viewSwap(viewName:string): void {
   const allViews = document.querySelectorAll('[data-view]') as NodeListOf<HTMLElement>;
-  /*
-  console.log(allViews);
-  allViews.forEach(view => {
-    view.classList.add('hidden');
-  });*/
+
 
   allViews.forEach(view => {
     if (view.tagName === "DIV")
@@ -170,7 +263,8 @@ function viewSwap(viewName:string): void {
   if(viewShow) {
     viewShow.classList.remove('hidden');
     if (viewName === 'my-deck') {
-      addSelectedCards();  // Load selected cards when switching to 'my-deck' view
+      loadAddedCardsFunction();
+   //   addSelectedCards();  // Load selected cards when switching to 'my-deck' view
     }
   }
 }
@@ -179,8 +273,11 @@ function viewSwap(viewName:string): void {
 
 function handleNavBarClick(event: Event): void {
   const $clickedLink = event.target as HTMLElement;
+  console.log('clickedlink', $clickedLink);
   const viewName = $clickedLink.dataset.view;
   if (viewName) {
+    // loadAddedCardsFunction();
+    addSelectedCards();
     viewSwap('my-deck');
   }
 }
@@ -268,9 +365,7 @@ async function archetypeFunction(archetype: any): Promise<void> {
       throw new Error(`HTTP ERROR: ${archetype.status}`);
     }
     const { data: dataArray } = await archetypeData.json();
-    console.log(dataArray);
-    /* let dataObject = {}; */
-    // renderList(dataArray);
+
     renderList(dataArray);
     console.log(renderList(dataArray))
   } catch (error) {
@@ -341,7 +436,6 @@ function submitFunction(event: Event): void {
   } else if (deckType === 'Red Eyes' && category === 'Trap') {
     trapFunction('red-eyes', 'trap card');
   }
- // writeData();
   resetForm();
 
 }
